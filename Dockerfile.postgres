@@ -1,0 +1,17 @@
+FROM postgres:alpine
+
+
+
+ENV POSTGRES_DB=testdb
+ENV POSTGRES_USER=vishal
+ENV POSTGRES_PASSWORD=vishal123
+
+EXPOSE 5432
+
+
+
+# Build with your custom Dockerfile
+# podman build -t postgres-db-local -f Dockerfile.postgres .
+
+# Run the container
+# podman run -d --name postgres-db-local -p 5432:5432 postgres-db-local

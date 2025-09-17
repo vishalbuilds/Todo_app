@@ -1,0 +1,15 @@
+#requirements for sqlalchemy
+sqlalchemy>=2.0.0
+asyncpg>=0.29.0
+
+
+
+#requirements for migrations
+alembic>=1.13.2
+
+#requirements for FastAPI
+fastapi==0.116.1
+uvicorn[standard]== 0.35.0
+
+#requirements for others
+environs>=14.00
