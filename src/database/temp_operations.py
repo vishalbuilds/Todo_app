@@ -27,7 +27,7 @@
 #     #       Status: {result.status}
 #     #       Priority: {result.priority}
 #     #       Tags: {result.tags}
-#     #       User ID: {result.user_id}
+#     #       User ID: {result.owner_id}
 #     #       ID: {result.id}
 #     #       ---------------------------------
 #     #       """)
@@ -46,7 +46,7 @@
 #     #         Status: {result.status}
 #     #         Priority: {result.priority}
 #     #         Tags: {result.tags}
-#     #         User ID: {result.user_id}
+#     #         User ID: {result.owner_id}
 #     #         ID: {result.id}
 #     #         ---------------------------------
 #             # """)

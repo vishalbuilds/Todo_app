@@ -1,6 +1,6 @@
 #authentication process for a database
 from sqlalchemy import URL
-aurh_url = URL.create(
+auth_url = URL.create(
     drivername="postgresql+asyncpg",
     username="vishal",  
     password="vishal123",
@@ -8,3 +8,4 @@ aurh_url = URL.create(
     port=5432,  
     database="testdb"
 )
+

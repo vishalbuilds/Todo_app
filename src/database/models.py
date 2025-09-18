@@ -1,5 +1,6 @@
 
-from sqlalchemy import create_engine, VARCHAR, TIMESTAMP, func, ForeignKey
+from enum import unique
+from sqlalchemy import Nullable, create_engine, VARCHAR, TIMESTAMP, false, func, ForeignKey, true ,BOOLEAN
 from sqlalchemy.orm import DeclarativeBase, declared_attr, mapped_column, Mapped
 from datetime import datetime
 from typing import Annotated, Optional
@@ -28,36 +29,45 @@ class TimeStampMixin:
     updated_at: Mapped[datetime] = mapped_column(
         TIMESTAMP, nullable=False, server_default=SERVER_DEFAULT_TIMESTAMP, onupdate=func.now()
     )
+class DueTimeMixin:
     due_date: Mapped[Optional[datetime]] = mapped_column(TIMESTAMP, nullable=True)
 
 # Typed annotated string types with defined VARCHAR lengths and nullability constraints
 
-str_50_not_null = Annotated[str, mapped_column(VARCHAR(50), nullable=False)]
-str_50_nullable = Annotated[str, mapped_column(VARCHAR(50))]
+str_20= Annotated[str, mapped_column(VARCHAR(20),nullable=false)]
+str_20_optional = Annotated[Optional[str], mapped_column(VARCHAR(20))]
+
+
+str_50= Annotated[str, mapped_column(VARCHAR(50),nullable=false)]
 str_50_optional = Annotated[Optional[str], mapped_column(VARCHAR(50))]
 
-str_225_pk= Annotated[str, mapped_column(VARCHAR(225), nullable=False,primary_key=True)]
-str_225_pk_unique= Annotated[str, mapped_column(VARCHAR(225), nullable=False,primary_key=True,unique=True)]
-
-str_225_not_null = Annotated[str, mapped_column(VARCHAR(225), nullable=False)]
-str_225_nullable = Annotated[str, mapped_column(VARCHAR(225))]
+str_225 = Annotated[str, mapped_column(VARCHAR(225),nullable=false)]
 str_225_optional = Annotated[Optional[str], mapped_column(VARCHAR(225))]
 
 
-# ORM model definition for List table combining Base and timestamp fields
-class List(Base, TimeStampMixin):
-    id: Mapped[str_225_pk_unique] 
-    title: Mapped[str_225_pk]
-    description: Mapped[str_225_nullable]
-    status: Mapped[str_50_nullable]
-    priority: Mapped[str_50_nullable]
+
+# ORM model definition for List table for todo
+class List(Base, TimeStampMixin, DueTimeMixin):
+    id: Mapped[str_50]= mapped_column(unique=True,primary_key=True) 
+    title: Mapped[str_225]= mapped_column(primary_key=true)
+    description: Mapped[str_225_optional]
+    status: Mapped[str_20_optional]
+    priority: Mapped[str_20_optional]
     tags: Mapped[dict]=mapped_column(JSON)
     # Foreign key referencing users.id with on-delete SET NULL cascade behavior
-    user_id: Mapped[str] = mapped_column(VARCHAR(225), ForeignKey('users.id', ondelete='SET NULL'), nullable=True)
+    owner_id: Mapped[str_20_optional] = mapped_column(ForeignKey('users.id', ondelete='SET NULL'))
 
-
-class User(Base):
-    id: Mapped[str_225_pk_unique]
+# ORM model definition for List table for user base
+class User(Base,TimeStampMixin):
+    id: Mapped[str_50]= mapped_column(unique=True,primary_key=True) 
+    username: Mapped[str_20]=mapped_column(primary_key=true,unique=true)
+    firstname: Mapped[str_20_optional]
+    lastname: Mapped [str_20_optional]
+    role: Mapped [str_20_optional]
+    hashed_password: Mapped [str_225]
+    email: Mapped [str_50_optional] =mapped_column(unique=true)
+    phone: Mapped [str_20_optional] =mapped_column(unique=true)
+    is_active : Mapped[bool]=mapped_column(BOOLEAN,nullable=false,default=true)
 
 
 
