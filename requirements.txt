@@ -10,6 +10,8 @@ alembic>=1.13.2
 #requirements for FastAPI
 fastapi==0.116.1
 uvicorn[standard]== 0.35.0
+python-multipart
+
 
 #requirements for others
 environs>=14.00
@@ -19,3 +21,7 @@ environs>=14.00
 pydantic>=2.0.0
 phonenumbers>=9.0.0
 pydantic[email]>=2.0.0
+
+
+#requirement for password hashing
+passlib[bcrypt]

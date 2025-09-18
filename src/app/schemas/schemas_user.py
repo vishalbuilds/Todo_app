@@ -1,12 +1,12 @@
-from pydantic import BaseModel, EmailStr, Field
-from typing import Optional
+from pydantic import BaseModel, EmailStr, ConfigDict
+from typing import Optional,Literal
 
 
 class CreateUserRequest(BaseModel):
     username: str
     firstname: Optional[str]=None
     lastname: Optional[str]=None
-    role: Optional[str]=None
+    role: Optional[Literal['admin', 'user', 'manager']] = 'user'
     password: str
     email: Optional[EmailStr]=None
     phone:Optional[str] = None
@@ -23,3 +23,25 @@ class CreateUserRequest(BaseModel):
             }
         }
     } 
+
+
+
+
+class CreateUserResponse(BaseModel):
+    id: str
+    username: str
+    firstname: str
+    lastname: str
+    phone: str
+    role: str
+
+    model_config = ConfigDict(from_attributes=True)
+
+class AuthUserResponse(BaseModel):
+    id: str
+    username: str
+    firstname: str
+    lastname: str
+    role: str
+
+    model_config = ConfigDict(from_attributes=True)

@@ -63,7 +63,7 @@ class User(Base,TimeStampMixin):
     username: Mapped[str_20]=mapped_column(primary_key=true,unique=true)
     firstname: Mapped[str_20_optional]
     lastname: Mapped [str_20_optional]
-    role: Mapped [str_20_optional]
+    role: Mapped [str_20]
     hashed_password: Mapped [str_225]
     email: Mapped [str_50_optional] =mapped_column(unique=true)
     phone: Mapped [str_20_optional] =mapped_column(unique=true)
