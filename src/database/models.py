@@ -1,4 +1,5 @@
 
+from email.mime import base
 from enum import unique
 from sqlalchemy import Nullable, create_engine, VARCHAR, TIMESTAMP, false, func, ForeignKey, true ,BOOLEAN
 from sqlalchemy.orm import DeclarativeBase, declared_attr, mapped_column, Mapped
@@ -67,7 +68,34 @@ class User(Base,TimeStampMixin):
     hashed_password: Mapped [str_225]
     email: Mapped [str_50_optional] =mapped_column(unique=true)
     phone: Mapped [str_20_optional] =mapped_column(unique=true)
-    is_active : Mapped[bool]=mapped_column(BOOLEAN,nullable=false,default=true)
+    account_status :Mapped[str_20]=mapped_column(default=true)
+
+class User_session(Base, TimeStampMixin):
+    id: Mapped[str_50]=mapped_column(unique=True,primary_key=True)
+    user_id: Mapped[str_50]=mapped_column(ForeignKey('users.id'),primary_key=True)
+    session_id: Mapped[str_50]  #same as jti id sent to refresh token
+    device_id: Mapped[str_50_optional]
+    user_agent:Mapped[str_225_optional] #check below dict user_agents
+    ip_address:Mapped[str_50_optional]
+    hashed_refresh_token: Mapped[str_225_optional]
+    is_active:Mapped[bool]=mapped_column(nullable=False)
+
+
+
+user_agents = {
+    "chrome_windows": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+                      "(KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36",
+    "firefox_windows": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:119.0) Gecko/20100101 Firefox/119.0",
+    "safari_mac": "Mozilla/5.0 (Macintosh; Intel Mac OS X 13_5) AppleWebKit/605.1.15 "
+                  "(KHTML, like Gecko) Version/17.6 Safari/605.1.15",
+    "edge_windows": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+                    "(KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36 Edg/140.0.0.0",
+    "iphone": "Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 "
+              "(KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1",
+    "android": "Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 "
+               "(KHTML, like Gecko) Chrome/140.0.0.0 Mobile Safari/537.36",
+    "curl": "curl/8.3.1"
+}
 
 
 
