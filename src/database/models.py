@@ -73,12 +73,16 @@ class User(Base,TimeStampMixin):
 class User_session(Base, TimeStampMixin):
     id: Mapped[str_50]=mapped_column(unique=True,primary_key=True)
     user_id: Mapped[str_50]=mapped_column(ForeignKey('users.id'),primary_key=True)
+    username: Mapped[str_20]
     session_id: Mapped[str_50]  #same as jti id sent to refresh token
-    device_id: Mapped[str_50_optional]
-    user_agent:Mapped[str_225_optional] #check below dict user_agents
-    ip_address:Mapped[str_50_optional]
+    device_id: Mapped[str_50]
+    user_agent:Mapped[str_225] #check below dict user_agents
+    ip_address:Mapped[str_50]
     hashed_refresh_token: Mapped[str_225_optional]
+    expire_date:Mapped[Optional[datetime]] = mapped_column(TIMESTAMP, nullable=True)
     is_active:Mapped[bool]=mapped_column(nullable=False)
+    is_logout:Mapped[bool]=mapped_column(nullable=False)
+
 
 
 

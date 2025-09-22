@@ -1,3 +1,4 @@
+from weakref import ref
 from pydantic import BaseModel, EmailStr, ConfigDict, Field
 from typing import Optional,Literal
 
@@ -40,6 +41,7 @@ class UserLoginRequest(BaseModel):
     device_id: str
     ip_address: str
     ip_address:str
+    user_agent: str
     model_config = {
         "json_schema_extra": {
             "example": {
@@ -70,6 +72,7 @@ class UserLoginResponse(BaseModel):
 class RefreshSessionRequest(BaseModel):
     id: str
     user_id: str
+    username: str
     session_id: str
     device_id: str
     user_agent: str
@@ -84,9 +87,40 @@ class RefreshSessionRequest(BaseModel):
 class RenewAccessTokenRequest(BaseModel):
     grant_type:str
     refresh_token: str
-    device_id:str
     ip_address: str
-    ip_address: str
+    user_agent:str
+    model_config = {
+        "json_schema_extra": {
+            "example": {
+                "grant_type": "refresh_token",
+                "refresh_token": "---",
+                "ip_address": "127.0.0.1:8000",
+                "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36"
+            }
+        }
+    }
+class RenewAccessTokenResponse(BaseModel):
+    grant_type:str = "access_token"
+    access_token: str
+    token_type: str = "bearer"
 
     model_config = ConfigDict(from_attributes=True)
 
+class LogoutRequest(BaseModel):
+    user_id: str
+    access_token: str
+    refresh_token: str
+    model_config = {
+        "json_schema_extra": {
+            "example": {
+                "user_id": "user123",
+                "access_token": "---",
+                "refresh_token": "--"
+            }
+        }
+    }
+
+class LogoutResponse(BaseModel):
+    user_id: str
+
+    model_config = ConfigDict(from_attributes=True)
