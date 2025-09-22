@@ -1,8 +1,7 @@
 from datetime import datetime, timedelta, timezone
 from jose import JWTError, jwt
 from jose.exceptions import ExpiredSignatureError, JWTClaimsError
-# from secrets_client import SecretsClient
-from dataclasses import dataclass
+from .results import Result
 
 
 
@@ -17,25 +16,31 @@ class JWTHandler:
         self.refresh_secret_key=refresh_secret_key
 
     
-    def create_access_token(self,access_token_claims:dict,time_delta: timedelta):
-        exp= datetime.now(tz=timezone.utc)+ time_delta
+    def create_access_token(self,access_token_claims:dict,expire_delta: timedelta=timedelta(minutes=1)):
+        exp= datetime.now(tz=timezone.utc)+ expire_delta
         access_token_claims.update({"exp":int(exp.timestamp())})
 
         return jwt.encode(claims=access_token_claims, key=self.access_secret_key, algorithm=ALGORITHM)
 
     
-    def create_refresh_token(self,refresh_token_claims:dict ,time_delta: timedelta):
-        exp= datetime.now(tz=timezone.utc)+ time_delta
+    def create_refresh_token(self,refresh_token_claims:dict ,expire_delta: timedelta=timedelta(minutes=5)):
+        exp= datetime.now(tz=timezone.utc)+ expire_delta
         refresh_token_claims.update({"exp":int(exp.timestamp())})
 
         return jwt.encode(claims=refresh_token_claims, key=self.refresh_secret_key, algorithm=ALGORITHM,)
         
     
 
-    def verify_access_token(self,token:str):
+    def verify_access_token(self, token: str, access: bool = False, refresh: bool = False):
+        if access:
+            secret_key = self.access_secret_key
+        elif refresh:
+            secret_key = self.refresh_secret_key
+        else:
+            return Result.error(message="set access=True or refresh=True")
         try:
-            payload=jwt.decode(token,key=self.secret_key,algorithms=ALGORITHM)
-            return payload
+            payload = jwt.decode(token, key=secret_key, algorithms=[ALGORITHM])
+            return {"payload": payload, "verified": True}
         except ExpiredSignatureError:
             raise 
         except JWTClaimsError:

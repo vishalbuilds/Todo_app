@@ -1,4 +1,4 @@
-from typing import Type, TypeVar, Any, Dict, List as TypingList, Optional
+from typing import Type, TypeVar, Any, Dict, List as TypingList, Optional, List
 from sqlalchemy import select, update, delete
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import DeclarativeMeta
@@ -17,8 +17,29 @@ class GenericCRUD:
         await self.session.refresh(obj)
         return obj
 
-    # Get one record by multiple filters
-    async def get_one(self, filters: Dict[str, Any]) -> Optional[T]:
+    # Get all record by multiple filters
+    async def get_all(self, filters: Dict[str, Any], order_by:Optional[str]=None, descending: bool = False, limit: Optional[int] = None) -> List[T]:
+        stmt = select(self.model)
+        for key, value in filters.items():
+            column = getattr(self.model, key, None)
+            if column is None:
+                raise ValueError(f"Invalid column name: {key}")
+            stmt = stmt.where(column == value)
+        
+        if order_by:
+            column = getattr(self.model, order_by, None)
+            if column is None:
+                raise ValueError(f"Invalid order_by column name: {order_by}")   
+            stmt=stmt.order_by(column.desc() if descending else column.asc())
+
+        if limit:
+            stmt = stmt.limit(limit)
+
+        result = await self.session.execute(stmt)
+        return result.scalars().all()
+
+    # Get one records by multiple filters
+    async def get_one(self, filters: Dict[str, Any]) -> TypingList[T]:
         stmt = select(self.model)
         for key, value in filters.items():
             column = getattr(self.model, key, None)
@@ -27,17 +48,6 @@ class GenericCRUD:
             stmt = stmt.where(column == value)
         result = await self.session.execute(stmt)
         return result.scalars().first()
-
-    # Get all records by multiple filters
-    async def get_all(self, filters: Dict[str, Any]) -> TypingList[T]:
-        stmt = select(self.model)
-        for key, value in filters.items():
-            column = getattr(self.model, key, None)
-            if column is None:
-                raise ValueError(f"Invalid column name: {key}")
-            stmt = stmt.where(column == value)
-        result = await self.session.execute(stmt)
-        return result.scalars().all()
 
     # Update record(s) by filters
     async def update(self, filters: Dict[str, Any], values: Dict[str, Any]) -> Optional[Dict]:
